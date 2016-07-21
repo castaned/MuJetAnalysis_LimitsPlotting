@@ -63,7 +63,7 @@ mGammaD_GeV = [0.25, 0.40, 0.55, 0.70, 0.85, 1.00]
 mGammaD_GeV_bot = 0.00 # low boundary where histograms start in m
 mGammaD_GeV_min = 0.25
 mGammaD_GeV_max = 2.00
-mGammaD_GeV_top = 2.25 # high boundary where histograms stops in m
+mGammaD_GeV_top = 10.0 # high boundary where histograms stops in m
 
 ctau_mm = [0.0, 0.2, 0.5, 2.0, 5.0]
 ctau_mm_bot = -0.5
@@ -1723,10 +1723,11 @@ def plot_BR_GammaD_to_2mu():
   cnv.SetLogy(0)
   
   array_mGammaD_BR_to_2mu = []
-  for m in fRange(0.25, 1.99, 201):
+  for m in fRange(0.25, 10.0, 976):
+    print m, BR_GammaD_to_2mu( m )
     array_mGammaD_BR_to_2mu.append(( m, 100.0*BR_GammaD_to_2mu( m ) ))
   
-  h_width_over_e2_GeV_dummy = ROOT.TH2F("h_width_over_e2_GeV_dummy", "h_width_over_e2_GeV_dummy", 100, mGammaD_GeV_bot, mGammaD_GeV_top, 100, 0.0, 100.0)
+  h_width_over_e2_GeV_dummy = ROOT.TH2F("h_width_over_e2_GeV_dummy", "h_width_over_e2_GeV_dummy", 1000, mGammaD_GeV_bot, mGammaD_GeV_top, 100, 0.0, 100.0)
   h_width_over_e2_GeV_dummy.SetXTitle("m_{#gamma_{D}} [GeV/#it{c}^{2}]")
   h_width_over_e2_GeV_dummy.SetYTitle("Br_{#gamma_{D}} [%]")
   h_width_over_e2_GeV_dummy.SetTitleOffset(1.35, "Y")
@@ -1738,7 +1739,7 @@ def plot_BR_GammaD_to_2mu():
 
   gr_BR_GammaD_to_2mu = ROOT.TGraph( len(array_mGammaD_BR_to_2mu), array.array("d", zip(*array_mGammaD_BR_to_2mu)[0]), array.array("d", zip(*array_mGammaD_BR_to_2mu)[1]) )
   gr_BR_GammaD_to_2mu.SetLineWidth(1)
-  gr_BR_GammaD_to_2mu.SetLineColor(ROOT.kBlack)
+  gr_BR_GammaD_to_2mu.SetLineColor(ROOT.kRed)
   gr_BR_GammaD_to_2mu.SetLineStyle(1)
   gr_BR_GammaD_to_2mu.Draw("L")
 

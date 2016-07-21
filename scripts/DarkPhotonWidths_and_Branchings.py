@@ -6,6 +6,7 @@ alphaEM        = 1.0/137.036
 m_electron_GeV = 0.00051
 m_muon_GeV     = 0.10566
 m_pion_GeV     = 0.13957
+m_tau_GeV      = 1.77682
 
 ################################################################################
 #           Decay Width(gammaD -> 2 leptons) / epsilon^2 in GeV                 
@@ -27,6 +28,11 @@ def Width_GammaD_to_2el_over_e2_GeV(m_GammaD):
 
 def Width_GammaD_to_2mu_over_e2_GeV(m_GammaD):
   return Width_GammaD_to_ll_over_e2_GeV( m_GammaD, m_muon_GeV )
+
+#           Decay Width(gammaD -> 2 taus) / epsilon^2 in GeV                   
+
+def Width_GammaD_to_2tau_over_e2_GeV(m_GammaD):
+  return Width_GammaD_to_ll_over_e2_GeV( m_GammaD, m_tau_GeV )
   
 ################################################################################
 #           Decay Width(gammaD -> hadrons) / epsilon^2 in GeV                   
@@ -71,8 +77,10 @@ def Width_GammaD_over_e2_GeV(m_GammaD):
     return Width_GammaD_to_2el_over_e2_GeV(m_GammaD) + Width_GammaD_to_2mu_over_e2_GeV(m_GammaD)
   elif m_GammaD > 2.0*m_pion_GeV and m_GammaD <= 0.36:
     return Width_GammaD_to_2el_over_e2_GeV(m_GammaD) + Width_GammaD_to_2mu_over_e2_GeV(m_GammaD) + Width_GammaD_to_2pi_over_e2_GeV(m_GammaD)
-  else:
+  elif m_GammaD > 0.36 and m_GammaD <= 2.0*m_tau_GeV:
     return Width_GammaD_to_2el_over_e2_GeV(m_GammaD) + Width_GammaD_to_2mu_over_e2_GeV(m_GammaD) + Width_GammaD_to_hadrons_over_e2_GeV(m_GammaD)
+  else:
+    return Width_GammaD_to_2el_over_e2_GeV(m_GammaD) + Width_GammaD_to_2mu_over_e2_GeV(m_GammaD) + Width_GammaD_to_2tau_over_e2_GeV(m_GammaD) + Width_GammaD_to_hadrons_over_e2_GeV(m_GammaD)
 
 ################################################################################
 #                  Branching Fraction BR(gammaD -> 2mu)                         

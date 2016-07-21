@@ -2,7 +2,7 @@
 execfile("Plots.py")
 
 #limit_vs_mGammaD_2012()
-limit_CSxBR2xAlpha_fb_vs_mGammaD_2012()
+#limit_CSxBR2xAlpha_fb_vs_mGammaD_2012()
 
 #Alpha_vs_mGammaD_2012()
 #Alpha_vs_ctau_2012()
@@ -25,7 +25,7 @@ limit_CSxBR2xAlpha_fb_vs_mGammaD_2012()
 #limit_CSxBR2_fb_and_CS_fb_and_CS_over_CSsm_vs_mGammaD_ctau_3D_and_2D()
 
 #plot_width_over_e2_GeV()
-##plot_BR_GammaD_to_2mu()
+plot_BR_GammaD_to_2mu()
 #plot_ctauConst_vs_logEpsilon2_mGammaD()
 
 #limit_Lines_CSxBR2_fb_vs_mGammaD_ctau()
