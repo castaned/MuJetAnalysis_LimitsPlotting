@@ -72,3 +72,44 @@ def fCS_SM_ggH_8TeV_pb(mh):
     CS_errP = kh * (high[2] - low[2]) + low[2]
     CS_errM = kh * (high[3] - low[3]) + low[3]
     return CS, CS_errP, CS_errM
+
+################################################################################
+#                    13 TeV                                                      
+# https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBSMAt13TeV
+################################################################################
+
+# 0 - Higgs mass in GeV
+# 1 - Cross Section in pb
+# 2,3 - uncertainty in %
+CS_SM_ggH_13TeV_pb = [
+  [	85	,	93.4	,	2.4	,	-4.5	],
+  [	90	,	84.2	,	2.3	,	-4.3	],
+  [	95	,	76.3	,	2.2	,	-4.1	],
+  [	100	,	69.3	,	2	,	-4	],
+  [	105	,	63.2	,	2	,	-3.9	],
+  [	110	,	57.9	,	1.9	,	-3.9	],
+  [	115	,	53.1	,	1.8	,	-3.8	],
+  [	120	,	48.9	,	1.8	,	-3.7	],
+  [	125	,	45.2	,	1.7	,	-3.7	],
+  [	130	,	41.8	,	1.7	,	-3.6	],
+  [	135	,	38.8	,	1.6	,	-3.5	],
+  [	140	,	36	,	1.6	,	-3.5	],
+  [	145	,	33.5	,	1.5	,	-3.5	],
+  [	150	,	31.29	,	1.5	,	-3.4	],
+]
+
+def fCS_SM_ggH_13TeV_pb(mh):
+    mh_min = CS_SM_ggH_13TeV_pb[0][0]
+    mh_max = CS_SM_ggH_13TeV_pb[len(CS_SM_ggH_13TeV_pb)-1][0]
+    if mh < mh_min or mh > mh_max: raise Exception
+    # get the bin number
+    i = int(floor( (mh - mh_min)/(mh_max - mh_min) * ( len(CS_SM_ggH_13TeV_pb)-1 ) ))
+    low, high = CS_SM_ggH_13TeV_pb[i], CS_SM_ggH_13TeV_pb[i+1]
+    kh = (mh - low[0])/(high[0] - low[0])
+    CS = kh * (high[1] - low[1]) + low[1]
+    CS_errP = kh * (high[2] - low[2]) + low[2]
+    CS_errM = kh * (high[3] - low[3]) + low[3]
+    return CS, CS_errP, CS_errM
+
+
+

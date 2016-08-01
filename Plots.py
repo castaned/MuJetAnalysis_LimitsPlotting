@@ -11,11 +11,15 @@ execfile("scripts/DarkPhotonWidths_and_Branchings.py")
 execfile("scripts/R_Hadrons.py")
 
 execfile("scripts/CmsDarkSusyAcceptance.py")
+execfile("scripts/CmsNmssmAcceptance.py")
+
+# NMSSM specific functions
+execfile("scripts/NMSSM_Br_a_Function.py")
 
 cnv = ROOT.TCanvas("cnv", "cnv")
 cnv.SetCanvasSize(900,900)
 
-txtHeader = ROOT.TLegend(.1,.935,0.97,1.)
+txtHeader = ROOT.TLegend(.15,.935,0.97,1.)
 txtHeader.SetFillColor(ROOT.kWhite)
 txtHeader.SetFillStyle(0)
 txtHeader.SetBorderSize(0)
@@ -26,8 +30,11 @@ txtHeader.SetTextAlign(22)
 #txtHeader.SetHeader("CMS Simulation #sqrt{s} = 8 TeV")
 #txtHeader.SetHeader("CMS Prelim. 2011   #sqrt{s} = 7 TeV   L_{int} = 5.3 fb^{-1}")
 #txtHeader.SetHeader("CMS 2011   #sqrt{s} = 7 TeV   L_{int} = 5.3 fb^{-1}")
-txtHeader.SetHeader("CMS Prelim. 2012   #sqrt{s} = 8 TeV   L_{int} = 20.65 fb^{-1}")
+#txtHeader.SetHeader("CMS Prelim. 2012   #sqrt{s} = 8 TeV   L_{int} = 20.65 fb^{-1}")
 #txtHeader.SetHeader("CMS 2012   #sqrt{s} = 8 TeV   L_{int} = 20.65 fb^{-1}")
+#txtHeader.SetHeader("#bf{CMS}                                  20.7 fb^{-1} (8 TeV)")
+#txtHeader.SetHeader("CMS Prelim. 2015   #sqrt{s} = 13 TeV   L_{int} = 2.83 fb^{-1}")
+txtHeader.SetHeader("#bf{CMS Prelim. 2015}          2.83 fb^{-1} (13 TeV)")
 #txtHeader.Draw()
 
 l_CMS = ROOT.TLegend(0.6,0.8,0.9,0.95)
@@ -58,6 +65,11 @@ lumi_fbinv = 20.7 # fb-1
 lumi_pbinv = 1000.*lumi_fbinv # pb-1
 SF = 0.93 # eFullData / eFullMc
 eFullMc_over_aGen = 0.68
+
+lumi2015_fbinv = 2.83 # fb-1
+lumi2015_pbinv = 1000.*lumi2015_fbinv # pb-1
+SF2015 = 0.92 # eFullData / eFullMc
+eFullMc_over_aGen2015 = 0.68
 
 mGammaD_GeV = [0.25, 0.40, 0.55, 0.70, 0.85, 1.00]
 mGammaD_GeV_bot = 0.00 # low boundary where histograms start in m
@@ -1891,4 +1903,269 @@ def plot_ctauConst_vs_logEpsilon2_mGammaD():
   
   cnv.SaveAs("plots/PDF/ctauConst_vs_logEpsilon2_mGammaD.pdf")
   os.system("convert -define pdf:use-cropbox=true -density 300 plots/PDF/ctauConst_vs_logEpsilon2_mGammaD.pdf -resize 900x900 plots/PNG/ctauConst_vs_logEpsilon2_mGammaD.png")
+
+
+
+################################################################################
+#                                 NMSSM Plots                                   
+################################################################################
+
+################################################################################
+#                 Plot limit on CSxBr2 vs ma for 2015 data                      
+################################################################################
+
+def limit_CSxBR2_fb_vs_ma_2015():
+
+  BR_h_aa = 0.03
+
+  cnv.SetLogy(1)
+
+  h_CSxBR_vs_ma_dummy = ROOT.TH2F("h_CSxBR_vs_ma_dummy", "h_CSxBR_vs_ma_dummy", 1000, 0., 4., 1000, 0.8, 1000.)
+  h_CSxBR_vs_ma_dummy.SetXTitle("mass of a_{1} [GeV]")
+  h_CSxBR_vs_ma_dummy.SetYTitle("#sigma(pp #rightarrow h_{i} #rightarrow 2a_{1}) B^{2}(a_{1} #rightarrow 2 #mu) [fb]")
+  h_CSxBR_vs_ma_dummy.SetTitleOffset(1.1, "Y")
+  h_CSxBR_vs_ma_dummy.GetYaxis().CenterTitle(1)
+  h_CSxBR_vs_ma_dummy.GetYaxis().SetTitleSize(0.06)
+  h_CSxBR_vs_ma_dummy.SetNdivisions(20210, "Y")
+  h_CSxBR_vs_ma_dummy.Draw()
+
+  array_ma_mh_86  = []
+  array_ma_mh_125 = []
+  array_ma_mh_150 = []
+  array_ma = [0.25, 0.5, 0.75, 1.0, 2.0, 3.55]
+  for ma_i in array_ma:
+    array_ma_mh_86.append((  ma_i, fCmsLimitVsM_2015(ma_i)/lumi2015_fbinv/SF2015/fCmsNmssmAcceptance_2015_13TeV(ma_i, 86. ) ))
+    array_ma_mh_125.append(( ma_i, fCmsLimitVsM_2015(ma_i)/lumi2015_fbinv/SF2015/fCmsNmssmAcceptance_2015_13TeV(ma_i, 125.) ))
+    array_ma_mh_150.append(( ma_i, fCmsLimitVsM_2015(ma_i)/lumi2015_fbinv/SF2015/fCmsNmssmAcceptance_2015_13TeV(ma_i, 150.) ))
   
+  gr_CSxBR_vs_ma_mh_86 = ROOT.TGraph(len(array_ma_mh_86), array.array("d", zip(*array_ma_mh_86)[0]), array.array("d", zip(*array_ma_mh_86)[1]))
+  gr_CSxBR_vs_ma_mh_86.SetLineWidth(2)
+  gr_CSxBR_vs_ma_mh_86.SetLineColor(ROOT.kMagenta+2)
+  gr_CSxBR_vs_ma_mh_86.SetLineStyle(9)
+  gr_CSxBR_vs_ma_mh_86.SetMarkerColor(ROOT.kMagenta+2)
+  gr_CSxBR_vs_ma_mh_86.SetMarkerStyle(22)
+  gr_CSxBR_vs_ma_mh_86.SetMarkerSize(1.5)
+  gr_CSxBR_vs_ma_mh_86.Draw("CP")
+
+  gr_CSxBR_vs_ma_mh_125 = ROOT.TGraph(len(array_ma_mh_125), array.array("d", zip(*array_ma_mh_125)[0]), array.array("d", zip(*array_ma_mh_125)[1]))
+  gr_CSxBR_vs_ma_mh_125.SetLineWidth(2)
+  gr_CSxBR_vs_ma_mh_125.SetLineColor(2)
+  gr_CSxBR_vs_ma_mh_125.SetLineStyle(10)
+  gr_CSxBR_vs_ma_mh_125.SetMarkerColor(2)
+  gr_CSxBR_vs_ma_mh_125.SetMarkerStyle(20)
+  gr_CSxBR_vs_ma_mh_125.SetMarkerSize(1.5)
+  gr_CSxBR_vs_ma_mh_125.Draw("CP")
+
+  gr_CSxBR_vs_ma_mh_150 = ROOT.TGraph(len(array_ma_mh_150), array.array("d", zip(*array_ma_mh_150)[0]), array.array("d", zip(*array_ma_mh_150)[1]))
+  gr_CSxBR_vs_ma_mh_150.SetLineWidth(2)
+  gr_CSxBR_vs_ma_mh_150.SetLineColor(ROOT.kBlue)
+  gr_CSxBR_vs_ma_mh_150.SetLineStyle(3)
+  gr_CSxBR_vs_ma_mh_150.SetMarkerColor(ROOT.kBlue)
+  gr_CSxBR_vs_ma_mh_150.SetMarkerStyle(23)
+  gr_CSxBR_vs_ma_mh_150.SetMarkerSize(1.5)
+  gr_CSxBR_vs_ma_mh_150.Draw("CP")
+  
+  array_ma_mh_125_SM = []
+  for ma_i in fRange(0.3, 3.55, 100):
+    CS_h125_fb = 1000.0*fCS_SM_ggH_13TeV_pb(125.)[0]
+    Br_a_mumu = fNMSSM_Br_a(ma_i, 20., 'mumu')
+    CSxBR = CS_h125_fb*BR_h_aa*Br_a_mumu*Br_a_mumu
+  #  print  ma_i, Br_a_mumu, CSxBR
+    array_ma_mh_125_SM.append(( ma_i, CSxBR ))
+  gr_CSxBR_vs_ma_mh_125_SM = ROOT.TGraph(len(array_ma_mh_125_SM), array.array("d", zip(*array_ma_mh_125_SM)[0]), array.array("d", zip(*array_ma_mh_125_SM)[1]))
+  gr_CSxBR_vs_ma_mh_125_SM.SetLineWidth(3)
+  gr_CSxBR_vs_ma_mh_125_SM.SetLineColor(ROOT.kGreen+3)
+  gr_CSxBR_vs_ma_mh_125_SM.SetLineStyle(1)
+  gr_CSxBR_vs_ma_mh_125_SM.Draw("C")
+  
+  print "Branching fraction h->aa for which limit and prediction  are the same at ma=2GeV and mh=125GeV :", fCmsLimitVsM_2015(ma_i)/lumi2015_fbinv/SF2015/fCmsNmssmAcceptance_2015_13TeV(ma_i, 125.)/(1000.0*fCS_SM_ggH_13TeV_pb(125.)[0]*fNMSSM_Br_a(2.0, 20., 'mumu')*fNMSSM_Br_a(2.0, 20., 'mumu'))
+  
+  l_CSxBR_vs_ma = ROOT.TLegend(0.35,0.72,0.9,0.92)
+  l_CSxBR_vs_ma.SetFillColor(ROOT.kWhite)
+  l_CSxBR_vs_ma.SetMargin(0.13)
+  l_CSxBR_vs_ma.SetBorderSize(0)
+  l_CSxBR_vs_ma.SetTextFont(42)
+  l_CSxBR_vs_ma.SetTextSize(0.035)
+  l_CSxBR_vs_ma.SetHeader("NMSSM 95% CL upper limits:")
+  l_CSxBR_vs_ma.AddEntry(gr_CSxBR_vs_ma_mh_86,"m_{h_{1}} =   86 GeV/#it{c}^{2}","LP")
+  l_CSxBR_vs_ma.AddEntry(gr_CSxBR_vs_ma_mh_125,"m_{h_{1}} = 125 GeV/#it{c}^{2}","LP")
+  l_CSxBR_vs_ma.AddEntry(gr_CSxBR_vs_ma_mh_150,"m_{h_{1}} = 150 GeV/#it{c}^{2}","LP")
+  l_CSxBR_vs_ma.Draw()
+  
+  l_CSxBR_vs_ma_2 = ROOT.TLegend(0.35,0.57,0.9,0.72)
+  l_CSxBR_vs_ma_2.SetFillColor(ROOT.kWhite)
+  l_CSxBR_vs_ma_2.SetMargin(0.13)
+  l_CSxBR_vs_ma_2.SetBorderSize(0)
+  l_CSxBR_vs_ma_2.SetTextFont(42)
+  l_CSxBR_vs_ma_2.SetTextSize(0.035)
+  l_CSxBR_vs_ma_2.SetHeader("Reference model:")
+  l_CSxBR_vs_ma_2.AddEntry(gr_CSxBR_vs_ma_mh_125_SM,"#sigma(pp #rightarrow h_{i} #rightarrow 2a_{1} ) = 0.03 #times #sigma_{SM}","L")
+  l_CSxBR_vs_ma_2.AddEntry(gr_CSxBR_vs_ma_mh_125_SM,"#sigma(pp #rightarrow h_{j}) #times B(h_{j} #rightarrow 2a_{1}) = 0 for j #neq i","")
+  l_CSxBR_vs_ma_2.Draw()
+
+  gr_CSxBR_vs_ma_mh_125_SM.Draw("C")
+  txtHeader.Draw()
+
+  cnv.SaveAs("plots/CSxBR_vs_ma_2015.pdf")
+  os.system("convert -define pdf:use-cropbox=true -density 300 plots/CSxBR_vs_ma_2015.pdf -resize 900x900 plots/CSxBR_vs_ma_2015.png")
+
+
+
+
+
+################################################################################
+#                 Plot limit on CSxBr2 vs mh for 2015 data                      
+################################################################################
+
+def limit_CSxBR2_fb_vs_mh_2015():
+  
+  BR_h_aa = 0.03
+  
+  cnv.SetLogy(0)
+  h_CSxBR_NMSSM_vs_mh_dummy = ROOT.TH2F("h_CSxBR_NMSSM_vs_mh_dummy", "h_CSxBR_NMSSM_vs_mh_dummy", 1000, 83., 153., 1000, 0., 30.)
+  h_CSxBR_NMSSM_vs_mh_dummy.SetXTitle("mass of h_{i} [GeV]")
+  h_CSxBR_NMSSM_vs_mh_dummy.SetYTitle("#sigma(pp #rightarrow h_{i}#rightarrow 2a_{1}) B^{2}(a_{1}#rightarrow 2 #mu) [fb]")
+  h_CSxBR_NMSSM_vs_mh_dummy.SetTitleOffset(1.2, "Y")
+  h_CSxBR_NMSSM_vs_mh_dummy.GetYaxis().CenterTitle(1)
+  h_CSxBR_NMSSM_vs_mh_dummy.GetYaxis().SetTitleSize(0.05)
+  h_CSxBR_NMSSM_vs_mh_dummy.SetTitleOffset(1.1, "X")
+  h_CSxBR_NMSSM_vs_mh_dummy.GetXaxis().CenterTitle(1)
+  h_CSxBR_NMSSM_vs_mh_dummy.GetXaxis().SetTitleSize(0.05)
+  #h_CSxBR_NMSSM_vs_mh_dummy.SetNdivisions(20220, "Y")
+  h_CSxBR_NMSSM_vs_mh_dummy.Draw()
+
+  array_mh_CSxBR_NMSSM_ma_025 = []
+  array_mh_CSxBR_NMSSM_ma_2   = []
+  array_mh_CSxBR_NMSSM_ma_355 = []
+  array_mh = [86., 90., 100., 110., 125., 150.]
+  for mh_i in array_mh:
+    array_mh_CSxBR_NMSSM_ma_025.append(( mh_i, fCmsLimitVsM_2015(0.25)/lumi2015_fbinv/SF2015/fCmsNmssmAcceptance_2015_13TeV(0.25, mh_i ) ))
+    array_mh_CSxBR_NMSSM_ma_2.append((   mh_i, fCmsLimitVsM_2015(2.00)/lumi2015_fbinv/SF2015/fCmsNmssmAcceptance_2015_13TeV(2.00, mh_i ) ))
+    array_mh_CSxBR_NMSSM_ma_355.append(( mh_i, fCmsLimitVsM_2015(3.55)/lumi2015_fbinv/SF2015/fCmsNmssmAcceptance_2015_13TeV(3.55, mh_i ) ))
+
+  gr_CSxBR_NMSSM_vs_mh_ma_025 = ROOT.TGraph(len(array_mh_CSxBR_NMSSM_ma_025), array.array("d", zip(*array_mh_CSxBR_NMSSM_ma_025)[0]), array.array("d", zip(*array_mh_CSxBR_NMSSM_ma_025)[1]))
+  gr_CSxBR_NMSSM_vs_mh_ma_025.SetLineWidth(2)
+  gr_CSxBR_NMSSM_vs_mh_ma_025.SetLineColor(ROOT.kMagenta+2)
+  gr_CSxBR_NMSSM_vs_mh_ma_025.SetLineStyle(9)
+  gr_CSxBR_NMSSM_vs_mh_ma_025.SetMarkerColor(ROOT.kMagenta+2)
+  gr_CSxBR_NMSSM_vs_mh_ma_025.SetMarkerStyle(22)
+  gr_CSxBR_NMSSM_vs_mh_ma_025.SetMarkerSize(1.5)
+  #gr_CSxBR_NMSSM_vs_mh_ma_025.Draw("CP")
+
+  gr_CSxBR_NMSSM_vs_mh_ma_2 = ROOT.TGraph(len(array_mh_CSxBR_NMSSM_ma_2), array.array("d", zip(*array_mh_CSxBR_NMSSM_ma_2)[0]), array.array("d", zip(*array_mh_CSxBR_NMSSM_ma_2)[1]))
+  gr_CSxBR_NMSSM_vs_mh_ma_2.SetLineWidth(2)
+  gr_CSxBR_NMSSM_vs_mh_ma_2.SetLineColor(2)
+  gr_CSxBR_NMSSM_vs_mh_ma_2.SetLineStyle(10)
+  gr_CSxBR_NMSSM_vs_mh_ma_2.SetMarkerColor(2)
+  gr_CSxBR_NMSSM_vs_mh_ma_2.SetMarkerStyle(20)
+  gr_CSxBR_NMSSM_vs_mh_ma_2.SetMarkerSize(1.5)
+  #gr_CSxBR_NMSSM_vs_mh_ma_2.Draw("CP")
+
+  gr_CSxBR_NMSSM_vs_mh_ma_355 = ROOT.TGraph(len(array_mh_CSxBR_NMSSM_ma_355), array.array("d", zip(*array_mh_CSxBR_NMSSM_ma_355)[0]), array.array("d", zip(*array_mh_CSxBR_NMSSM_ma_355)[1]))
+  gr_CSxBR_NMSSM_vs_mh_ma_355.SetLineWidth(2)
+  gr_CSxBR_NMSSM_vs_mh_ma_355.SetLineColor(ROOT.kBlue)
+  gr_CSxBR_NMSSM_vs_mh_ma_355.SetLineStyle(3)
+  gr_CSxBR_NMSSM_vs_mh_ma_355.SetMarkerColor(ROOT.kBlue)
+  gr_CSxBR_NMSSM_vs_mh_ma_355.SetMarkerStyle(23)
+  gr_CSxBR_NMSSM_vs_mh_ma_355.SetMarkerSize(1.5)
+  #gr_CSxBR_NMSSM_vs_mh_ma_355.Draw("CP")
+
+  execfile("scripts/NMSSM_Br_a_Function.py")
+  array_mh_ma_2_SM = []
+  for mh_i in fRange(86., 149., 100):
+      CS_fb = 1000.0*fCS_SM_ggH_13TeV_pb(mh_i)[0]
+      Br_a_mumu = fNMSSM_Br_a(2.0, 20., 'mumu')
+      CSxBR = CS_fb*BR_h_aa*Br_a_mumu*Br_a_mumu
+  #    print mh_i, CS_fb, CSxBR
+      array_mh_ma_2_SM.append(( mh_i, CSxBR ))
+  gr_CSxBR_SM = ROOT.TGraph(len(array_mh_ma_2_SM), array.array("d", zip(*array_mh_ma_2_SM)[0]), array.array("d", zip(*array_mh_ma_2_SM)[1]))
+  gr_CSxBR_SM.SetLineWidth(3)
+  gr_CSxBR_SM.SetLineColor(ROOT.kGreen+3)
+  gr_CSxBR_SM.SetLineStyle(1)
+  #gr_CSxBR_SM.Draw("C")
+
+  box1 = ROOT.TBox(125.0, 0.0, 153.0, 30.0)
+  box1.SetFillStyle(3001)
+  box1.SetFillColor(ROOT.kRed - 10)
+  box1.Draw()
+  
+  a_mh_125 = ROOT.TArrow(125.0, 0.0, 125.0, 30.0, 0.02, "--")
+  a_mh_125.SetLineColor(ROOT.kBlack)
+  a_mh_125.SetLineWidth(1)
+  a_mh_125.SetLineStyle(7)
+  a_mh_125.Draw()
+  
+  ROOT.gPad.RedrawAxis()
+
+  l_CSxBR_NMSSM_vs_mh = ROOT.TLegend(0.20,0.71,0.93,0.91)
+  l_CSxBR_NMSSM_vs_mh.SetFillColor(ROOT.kWhite)
+  l_CSxBR_NMSSM_vs_mh.SetFillStyle(4050)
+  l_CSxBR_NMSSM_vs_mh.SetBorderSize(0)
+  l_CSxBR_NMSSM_vs_mh.SetTextFont(42)
+  l_CSxBR_NMSSM_vs_mh.SetTextSize(0.035)
+  l_CSxBR_NMSSM_vs_mh.SetMargin(0.13)
+  l_CSxBR_NMSSM_vs_mh.SetHeader("NMSSM 95% CL upper limits:")
+  l_CSxBR_NMSSM_vs_mh.AddEntry(gr_CSxBR_NMSSM_vs_mh_ma_355,"m_{a_{1}} = 3.55 GeV/#it{c}^{2}","LP")
+  l_CSxBR_NMSSM_vs_mh.AddEntry(gr_CSxBR_NMSSM_vs_mh_ma_2,  "m_{a_{1}} = 2 GeV/#it{c}^{2}",   "LP")
+  l_CSxBR_NMSSM_vs_mh.AddEntry(gr_CSxBR_NMSSM_vs_mh_ma_025,"m_{a_{1}} = 0.25 GeV/#it{c}^{2}","LP")
+  l_CSxBR_NMSSM_vs_mh.Draw()
+  
+  l_CSxBR_NMSSM_vs_mh_2 = ROOT.TLegend(0.20,0.56,0.93,0.71)
+  l_CSxBR_NMSSM_vs_mh_2.SetFillColor(ROOT.kWhite)
+  l_CSxBR_NMSSM_vs_mh_2.SetFillStyle(4050)
+  l_CSxBR_NMSSM_vs_mh_2.SetBorderSize(0)
+  l_CSxBR_NMSSM_vs_mh_2.SetTextFont(42)
+  l_CSxBR_NMSSM_vs_mh_2.SetTextSize(0.035)
+  l_CSxBR_NMSSM_vs_mh_2.SetMargin(0.13)
+  l_CSxBR_NMSSM_vs_mh_2.SetHeader("Reference model:")
+  l_CSxBR_NMSSM_vs_mh_2.AddEntry(gr_CSxBR_SM,"#sigma(pp #rightarrow h_{i} #rightarrow 2a_{1} ) = 0.03 #times #sigma_{SM}","L")
+  l_CSxBR_NMSSM_vs_mh_2.AddEntry(gr_CSxBR_SM,"B(a_{1}#rightarrow 2#mu)=7.7%","")
+  l_CSxBR_NMSSM_vs_mh_2.Draw()
+  
+  l_mh1 = ROOT.TLegend(0.22,0.15,0.6,0.3)
+  l_mh1.SetFillColor(ROOT.kWhite)
+  l_mh1.SetFillStyle(4050)
+  l_mh1.SetBorderSize(0)
+  l_mh1.SetTextFont(42)
+  l_mh1.SetTextSize(0.035)
+  l_mh1.SetTextColor(ROOT.kBlack)
+  l_mh1.SetMargin(0.13)
+  l_mh1.SetHeader("")
+  l_mh1.AddEntry(gr_CSxBR_SM,"h_{i} = h_{1}:","")
+  l_mh1.AddEntry(gr_CSxBR_SM,"m_{h_{1}} < m_{h_{2}}=125 GeV","")
+  l_mh1.Draw()
+
+  l_mh2 = ROOT.TLegend(0.63,0.15,0.9,0.3)
+  l_mh2.SetFillColor(ROOT.kWhite)
+  l_mh2.SetFillStyle(4050)
+  l_mh2.SetBorderSize(0)
+  l_mh2.SetTextFont(42)
+  l_mh2.SetTextSize(0.035)
+  l_mh2.SetTextColor(ROOT.kBlack)
+  l_mh2.SetMargin(0.13)
+  l_mh2.SetHeader("")
+  l_mh2.AddEntry(gr_CSxBR_SM,"h_{i} = h_{2}:","")
+  l_mh2.AddEntry(gr_CSxBR_SM,"125 GeV = m_{h_{1}} #leq m_{h_{2}}","")
+  l_mh2.Draw()
+
+#  l_CMS = ROOT.TLegend(0.7,0.9,0.9,0.95)
+#  l_CMS.SetFillColor(ROOT.kWhite)
+#  l_CMS.SetFillStyle(4050)
+#  l_CMS.SetBorderSize(0)
+#  l_CMS.SetTextFont(61)
+#  l_CMS.SetTextSize(30./600.)
+#  l_CMS.SetTextColor(ROOT.kBlack)
+#  #l_CMS.SetMargin(0.13)
+#  l_CMS.SetHeader("CMS")
+#  l_CMS.Draw()
+
+  gr_CSxBR_NMSSM_vs_mh_ma_355.Draw("CP")
+  gr_CSxBR_NMSSM_vs_mh_ma_2.Draw("CP")
+  gr_CSxBR_NMSSM_vs_mh_ma_025.Draw("CP")
+  gr_CSxBR_SM.Draw("C")
+
+  txtHeader.Draw()
+
+  cnv.SaveAs("plots/CSxBR_NMSSM_vs_mh_2015.pdf")
+  os.system("convert -define pdf:use-cropbox=true -density 300 plots/CSxBR_NMSSM_vs_mh_2015.pdf -resize 900x900 plots/CSxBR_NMSSM_vs_mh_2015.png")
+

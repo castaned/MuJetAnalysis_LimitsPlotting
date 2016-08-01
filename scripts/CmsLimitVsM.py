@@ -1,6 +1,9 @@
 import math
 from math import *
 
+def fCmsLimitVsM_2015(m):
+  return 3.08 # this is "flat" limit before unblinding
+
 def fCmsLimitVsM(m):
 #  M = 0.276
   M = 0.315
@@ -8,7 +11,7 @@ def fCmsLimitVsM(m):
   LimitMin = 3.08
 #  LimitMax = 4.84
   LimitMax = 4.26
-  if True:
+  if False:
     print "M = ", M
     print "LimitMin = ", LimitMin
     print "LimitMax = ", LimitMax
