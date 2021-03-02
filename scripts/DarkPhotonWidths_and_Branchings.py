@@ -1,6 +1,8 @@
+import math
 from math import *
 
-execfile("scripts/R_Hadrons.py")
+#execfile("scripts/R_Hadrons.py")
+execfile("R_Hadrons.py")
 
 alphaEM        = 1.0/137.036
 m_electron_GeV = 0.00051
@@ -52,7 +54,8 @@ def CS_2mu(sqrtS):
 
 # Cross section e+e- -> pi+pi-
 def CS_2pi(sqrtS):
-  cs1 = math.pi * alphaEM * alphaEM / 3.0 / (sqrtS * sqrtS)
+#  cs1 = math.pi * alphaEM * alphaEM / 3.0 / (sqrtS * sqrtS)
+  cs1 = 3.141592 * alphaEM * alphaEM / 3.0 / (sqrtS * sqrtS)
   cs2 = sqrt( 1.0 - 4.0 * m_pion_GeV * m_pion_GeV / (sqrtS * sqrtS) )
   r2 = 11.27 # GeV^-2 see arxiv:hep-ph/0208177 pp 26-27
   c1 =  3.3  # GeV^-4
